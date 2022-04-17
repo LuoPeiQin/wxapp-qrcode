@@ -5,6 +5,11 @@
     </view>
     <view class="input-form">
         <view class="mybtn">
+            <label>
+                <checkbox-group bindchange="checkboxChange">
+                    <checkbox value="cb" checked="{{isSave}}" />开启记忆功能
+                </checkbox-group>
+            </label>
             <button bindtap="submit" type="primary">生成二维码</button>
         </view>
         <view class="input-row">
@@ -13,23 +18,23 @@
         </view>
         <view class="input-row">
             <label>本地IP</label>
-            <input bindinput="bindLocalIpInput" placeholder="本地IP" value="{{localIpValue}}" type="digit" maxlength="16" />
+            <input bindinput="bindLocalIpInput" placeholder="本地IP" value="{{localIpValue}}" type="digit" maxlength="15" />
         </view>
         <view class="input-row">
             <label>子网掩码</label>
-            <input bindinput="bindSubnetMaskInput" placeholder="子网掩码" value="{{subnetMaskValue}}" type="digit" maxlength="16" />
+            <input bindinput="bindSubnetMaskInput" placeholder="子网掩码" value="{{subnetMaskValue}}" type="digit" maxlength="15" />
         </view>
         <view class="input-row">
             <label>网关</label>
-            <input bindinput="bindGatewayInput" placeholder="网关" value="{{gatewayValue}}" type="digit" maxlength="16" />
+            <input bindinput="bindGatewayInput" placeholder="网关" value="{{gatewayValue}}" type="digit" maxlength="15" />
         </view>
         <view class="input-row">
             <label>DNS服务器地址</label>
-            <input bindinput="bindDnsInput" placeholder="DNS服务器地址" value="{{dnsValue}}" type="digit" maxlength="16" />
+            <input bindinput="bindDnsInput" placeholder="DNS服务器地址" value="{{dnsValue}}" type="digit" maxlength="15" />
         </view>
         <view class="input-row">
             <label>XTMS服务器IP</label>
-            <input bindinput="bindXTMSIPInput" placeholder="XTMS服务器IP" value="{{XTMSIPValue}}" type="digit" maxlength="16" />
+            <input bindinput="bindXTMSIPInput" placeholder="XTMS服务器IP" value="{{XTMSIPValue}}" type="digit" maxlength="15" />
         </view>
         <view class="input-row">
             <label>XTMS服务器端口</label>

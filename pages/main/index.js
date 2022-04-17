@@ -13,17 +13,51 @@ Page({
     XTMSIPValue: '172.21.75.100',
     XTMSPortValue: '16999',
     volumeValue: '5',
+    isSave: false,
   },
   onLoad: function (options) {
-    
     // 页面初始化 options为页面跳转所带来的参数
     // var size = this.setCanvasSize(); //动态设置画布大小
     // var initUrl = this.data.text;
     // this.createQrCode("", "mycanvas", size.w, size.h);
-
+    this.setData({
+      isSave: wx.getStorageSync("isSave")
+    })
+    if (this.data.isSave) {
+      this.showLocal()
+    }
+  },
+  checkboxChange(e) {
+    console.log('radio发生change事件，携带value值为：', e.detail.value)
+    if (e.detail.value == "cb") {
+      this.setData({
+        isSave: true
+      })
+    } else {
+      this.setData({
+        isSave: false
+      })
+    }
+    wx.setStorageSync('isSave', this.data.isSave)
+  },
+  showLocal() {
+    var localIP = wx.getStorageSync("localIP")
+    console.log("localIP = " + localIP)
+    if (localIP.length > 0) {
+      this.setData({
+        autoIpValue: wx.getStorageSync("autoIP"),
+        localIpValue: wx.getStorageSync("localIP"),
+        subnetMaskValue: wx.getStorageSync("subnetMask"),
+        gatewayValue: wx.getStorageSync("gateway"),
+        dnsValue: wx.getStorageSync("DNS"),
+        XTMSIPValue: wx.getStorageSync("XTMSIP"),
+        XTMSPortValue: wx.getStorageSync("XTMSPort"),
+        volumeValue: wx.getStorageSync("volume")
+      })
+    }
   },
   onReady: function () {
-    
+
   },
   onShow: function () {
     // 页面显示
@@ -84,23 +118,87 @@ Page({
   },
   submit: function (e) {
     var that = this;
-    if (!this.data.autoIpValue) {
-      wx.showModal({
-        title: '提示',
-        content: '请先输入要转换的内容！',
-        showCancel: false
+    // 自动获取IP验证
+    var autoIp = this.data.autoIpValue;
+    if (autoIp != "0" && autoIp != "1") {
+      wx.showToast({
+        icon: 'none',
+        title: '自动获取IP只能输入0或1',
+      })
+      return
+    }
+    // 本地IP
+    var localIp = this.data.localIpValue;
+    if (!checkIp(localIp)) {
+      wx.showToast({
+        icon: 'none',
+        title: '本地IP输入不合法',
+      })
+      return
+    }
+
+    var subnetMask = this.data.subnetMaskValue;
+    if (!checkIp(subnetMask)) {
+      wx.showToast({
+        icon: 'none',
+        title: '子网掩码输入不合法',
+      })
+      return
+    }
+
+    var gateway = this.data.gatewayValue;
+    if (!checkIp(gateway)) {
+      wx.showToast({
+        icon: 'none',
+        title: '网关输入不合法',
+      })
+      return
+    }
+
+    var dns = this.data.dnsValue;
+    if (!checkIp(dns)) {
+      wx.showToast({
+        icon: 'none',
+        title: 'DNS服务器地址输入不合法',
+      })
+      return
+    }
+
+    var xtmsIp = this.data.XTMSIPValue;
+    if (!checkIp(xtmsIp)) {
+      wx.showToast({
+        icon: 'none',
+        title: 'XTMS服务器IP地址输入不合法',
+      })
+      return
+    }
+
+    var xtmsPort = parseInt(this.data.XTMSPortValue);
+    if (!(xtmsPort > 0 && xtmsPort < 65536)) {
+      wx.showToast({
+        icon: 'none',
+        title: 'XTMS服务器端口需要大于0小于65536',
+      })
+      return
+    }
+
+    var volume = parseInt(this.data.volumeValue);
+    if (!(volume >= 0 && volume <= 5)) {
+      wx.showToast({
+        icon: 'none',
+        title: '外置喇叭音量只能是0到5',
       })
       return
     }
     this.setData({
-      text: "{\"AutoIP\":\"" + this.data.autoIpValue + "\"," +
+      text: "{\"autoIP\":\"" + this.data.autoIpValue + "\"," +
         "\"localIP\":\"" + this.data.localIpValue + "\"," +
         "\"subnetMask\":\"" + this.data.subnetMaskValue + "\"," +
         "\"gateway\":\"" + this.data.gatewayValue + "\"," +
-        "\"DNS\":\"" + this.data.gatewayValue + "\"," +
-        "\"XTMSIP\":\"" + this.data.gatewayValue + "\"," +
-        "\"XTMSPort\":\"" + this.data.gatewayValue + "\"," +
-        "\"volume\":\"" + this.data.dnsValue + "\"}"
+        "\"DNS\":\"" + this.data.dnsValue + "\"," +
+        "\"XTMSIP\":\"" + this.data.XTMSIPValue + "\"," +
+        "\"XTMSPort\":\"" + this.data.XTMSPortValue + "\"," +
+        "\"volume\":\"" + this.data.volumeValue + "\"}"
     })
     that.setData({
       maskHidden: false,
@@ -118,12 +216,25 @@ Page({
       that.setData({
         maskHidden: true
       });
+      if (that.data.isSave) {
+        that.saveLocal()
+      }
       clearTimeout(st);
       wx.setScreenBrightness({
         value: 1,
       })
     }, 2000)
 
+  },
+  saveLocal() {
+    wx.setStorageSync("autoIP", this.data.autoIpValue)
+    wx.setStorageSync("localIP", this.data.localIpValue)
+    wx.setStorageSync("subnetMask", this.data.subnetMaskValue)
+    wx.setStorageSync("gateway", this.data.gatewayValue)
+    wx.setStorageSync("DNS", this.data.dnsValue)
+    wx.setStorageSync("XTMSIP", this.data.XTMSIPValue)
+    wx.setStorageSync("XTMSPort", this.data.XTMSPortValue)
+    wx.setStorageSync("volume", this.data.volumeValue)
   },
   bindAutoIpInput(e) {
     this.setData({
@@ -167,6 +278,19 @@ Page({
   }
 
 })
+
+function checkIp(ipValue) {
+  // var length = ipValue.split(".").length
+  // if (length == 4) {
+  //   if (/^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}$/.test(ipValue)) {
+  //     return true
+  //   }
+  // }
+  if (/^(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|[0-9])\.((1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)\.){2}(1\d{2}|2[0-4]\d|25[0-5]|[1-9]\d|\d)$/.test(ipValue)) {
+    return true
+  }
+  return false
+}
 
 /**
    *  
