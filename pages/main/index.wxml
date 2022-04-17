@@ -1,17 +1,47 @@
 <!-- pages/main/index.wxml -->
 <view class="container-box">
     <view class="img-box">
-        <image bindtap="previewImg" mode="scaleToFill" src="{{imagePath}}"></image>
+        <image bindtap="previewImg" show-menu-by-longpress="true" mode="scaleToFill" src="{{imagePath}}"></image>
     </view>
-    <form bindsubmit="formSubmit">
-        <view class="input-row">
-            <label>网址</label>
-            <input name='url' value='' type="text" maxlength="255" placeholder="{{placeholder}}" />
+    <view class="input-form">
+        <view class="mybtn">
+            <button bindtap="submit" type="primary">生成二维码</button>
         </view>
-        <button formType="submit" class="mybtn" type="primary">生成二维码</button>
-    </form>
+        <view class="input-row">
+            <label>自动获取IP</label>
+            <input bindinput="bindAutoIpInput" type="number" placeholder="自动获取IP" value="{{autoIpValue}}" maxlength="1" />
+        </view>
+        <view class="input-row">
+            <label>本地IP</label>
+            <input bindinput="bindLocalIpInput" placeholder="本地IP" value="{{localIpValue}}" type="digit" maxlength="16" />
+        </view>
+        <view class="input-row">
+            <label>子网掩码</label>
+            <input bindinput="bindSubnetMaskInput" placeholder="子网掩码" value="{{subnetMaskValue}}" type="digit" maxlength="16" />
+        </view>
+        <view class="input-row">
+            <label>网关</label>
+            <input bindinput="bindGatewayInput" placeholder="网关" value="{{gatewayValue}}" type="digit" maxlength="16" />
+        </view>
+        <view class="input-row">
+            <label>DNS服务器地址</label>
+            <input bindinput="bindDnsInput" placeholder="DNS服务器地址" value="{{dnsValue}}" type="digit" maxlength="16" />
+        </view>
+        <view class="input-row">
+            <label>XTMS服务器IP</label>
+            <input bindinput="bindXTMSIPInput" placeholder="XTMS服务器IP" value="{{XTMSIPValue}}" type="digit" maxlength="16" />
+        </view>
+        <view class="input-row">
+            <label>XTMS服务器端口</label>
+            <input bindinput="bindXTMSPortInput" placeholder="XTMS服务器端口" value="{{XTMSPortValue}}" type="number" maxlength="5" />
+        </view>
+        <view class="input-row">
+            <label>外置喇叭音量</label>
+            <input bindinput="bindVolumeInput" placeholder="外置喇叭音量" value="{{volumeValue}}" maxlength="1" type="number" />
+        </view>
+    </view>
 </view>
 <view hidden="{{maskHidden}}" class="mask"></view>
 <view class="canvas-box">
-    <canvas style="width: 686rpx;height: 686rpx;background:#f1f1f1;" canvas-id="mycanvas" />
+    <canvas tpye="2d" style="width: 686rpx;height: 686rpx;background:#f1f1f1;" canvas-id="mycanvas" />
 </view>

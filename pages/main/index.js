@@ -4,21 +4,28 @@ Page({
   data: {
     maskHidden: true,
     imagePath: '',
-    placeholder: 'http://wxapp-union.com' //默认二维码生成文本
+    text: 'https://m.baidu.com',
+    autoIpValue: '0',
+    localIpValue: '172.21.75.13',
+    subnetMaskValue: '172.21.75.13',
+    gatewayValue: '172.21.75.1',
+    dnsValue: '114.114.114.114',
+    XTMSIPValue: '172.21.75.100',
+    XTMSPortValue: '16999',
+    volumeValue: '5',
   },
   onLoad: function (options) {
+    
     // 页面初始化 options为页面跳转所带来的参数
-    var size = this.setCanvasSize(); //动态设置画布大小
-    var initUrl = this.data.placeholder;
-    this.createQrCode(initUrl, "mycanvas", size.w, size.h);
-
+    // var size = this.setCanvasSize(); //动态设置画布大小
+    // var initUrl = this.data.text;
+    // this.createQrCode("", "mycanvas", size.w, size.h);
 
   },
   onReady: function () {
-
+    
   },
   onShow: function () {
-
     // 页面显示
   },
   onHide: function () {
@@ -27,7 +34,6 @@ Page({
 
   onUnload: function () {
     // 页面关闭
-
   },
   //适配不同屏幕大小的canvas
   setCanvasSize: function () {
@@ -76,17 +82,26 @@ Page({
       urls: [img] // 需要预览的图片http链接列表
     })
   },
-  formSubmit: function (e) {
+  submit: function (e) {
     var that = this;
-    var url = e.detail.value.url;
-    if (url === "") {
-      wx.showToast({
-        icon: 'none',
-        title: '请输入网址',
-        duration: 2000
-      });
-      return;
+    if (!this.data.autoIpValue) {
+      wx.showModal({
+        title: '提示',
+        content: '请先输入要转换的内容！',
+        showCancel: false
+      })
+      return
     }
+    this.setData({
+      text: "{\"AutoIP\":\"" + this.data.autoIpValue + "\"," +
+        "\"localIP\":\"" + this.data.localIpValue + "\"," +
+        "\"subnetMask\":\"" + this.data.subnetMaskValue + "\"," +
+        "\"gateway\":\"" + this.data.gatewayValue + "\"," +
+        "\"DNS\":\"" + this.data.gatewayValue + "\"," +
+        "\"XTMSIP\":\"" + this.data.gatewayValue + "\"," +
+        "\"XTMSPort\":\"" + this.data.gatewayValue + "\"," +
+        "\"volume\":\"" + this.data.dnsValue + "\"}"
+    })
     that.setData({
       maskHidden: false,
     });
@@ -99,13 +114,80 @@ Page({
       wx.hideToast()
       var size = that.setCanvasSize();
       //绘制二维码
-      that.createQrCode(url, "mycanvas", size.w, size.h);
+      that.createQrCode(that.data.text, "mycanvas", size.w, size.h);
       that.setData({
         maskHidden: true
       });
       clearTimeout(st);
+      wx.setScreenBrightness({
+        value: 1,
+      })
     }, 2000)
 
+  },
+  bindAutoIpInput(e) {
+    this.setData({
+      autoIpValue: e.detail.value
+    })
+  },
+  bindLocalIpInput(e) {
+    this.setData({
+      localIpValue: e.detail.value
+    })
+  },
+  bindSubnetMaskInput(e) {
+    this.setData({
+      subnetMaskValue: e.detail.value
+    })
+  },
+  bindGatewayInput(e) {
+    this.setData({
+      gatewayValue: e.detail.value
+    })
+  },
+  bindDnsInput(e) {
+    this.setData({
+      dnsValue: e.detail.value
+    })
+  },
+  bindXTMSIPInput(e) {
+    this.setData({
+      XTMSIPValue: e.detail.value
+    })
+  },
+  bindXTMSPortInput(e) {
+    this.setData({
+      XTMSPortValue: e.detail.value
+    })
+  },
+  bindVolumeInput(e) {
+    this.setData({
+      volumeValue: e.detail.value
+    })
   }
 
 })
+
+/**
+   *  
+   {
+    "自动获取IP": "0",
+    "本地IP": "172.21.75.13",
+    "子网掩码": "255.255.255.0",
+    "网关": "172.21.75.1",
+    "DNS服务器地址": "114.114.114.114",
+    "XTMS服务器IP": "172.21.75.100",
+    "XTMS服务器端口": "16999",
+    "外置喇叭音量": "5"
+  }
+{
+    "autoIP": "0",
+    "localIP": "172.21.75.13",
+    "subnetMask": "255.255.255.0",
+    "gateway": "172.21.75.1",
+    "DNS": "114.114.114.114",
+    "XTMSIP": "172.21.75.100",
+    "XTMSPort": "16999",
+    "volume": "5"
+}
+   */
